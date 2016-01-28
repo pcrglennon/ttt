@@ -6,7 +6,7 @@ describe TicTacToe::Board do
   describe 'constructor' do
     context 'with a size argument' do
       it 'should set the board\'s size to the value of the argument' do
-        expect(described_class.new(4).size).to eq(4)
+        expect(described_class.new(size: 4).size).to eq(4)
       end
     end
 
@@ -20,11 +20,9 @@ describe TicTacToe::Board do
   describe '#full?' do
     context 'with no available spaces' do
       before do
-        allow(board).to receive(:spaces) do
-          [['x', 'o', 'x'],
-           ['o', 'x', 'o'],
-           ['o', 'x', 'x']]
-        end
+        board.spaces = [['x', 'o', 'x'],
+                        ['o', 'x', 'o'],
+                        ['o', 'x', 'x']]
       end
 
       it 'should return true' do
@@ -34,11 +32,9 @@ describe TicTacToe::Board do
 
     context 'with available spaces' do
       before do
-        allow(board).to receive(:spaces) do
-          [['x', nil, 'o'],
-           [nil, 'x', nil],
-           ['o', 'o', 'x']]
-        end
+        board.spaces = [['x', nil, 'o'],
+                        [nil, 'x', nil],
+                        ['o', 'o', 'x']]
       end
 
       it 'should return false' do
@@ -47,114 +43,94 @@ describe TicTacToe::Board do
     end
   end
 
-  describe '#winning_character' do
-    context 'with a complete row of one character' do
+  describe '#winning_marker' do
+    context 'with a complete row of one marker' do
       before do
-        allow(board).to receive(:spaces) do
-          [['x', 'x', 'x'],
-           [nil, 'o', nil],
-           ['o', 'o', nil]]
-        end
+        board.spaces = [['x', 'x', 'x'],
+                        [nil, 'o', nil],
+                        ['o', 'o', nil]]
       end
 
-      it 'should return that character' do
-        expect(board.winning_character).to eq('x')
+      it 'should return that marker' do
+        expect(board.winning_marker).to eq('x')
       end
     end
 
-    context 'with a complete column of one character' do
+    context 'with a complete column of one marker' do
       before do
-        allow(board).to receive(:spaces) do
-          [['x', nil, 'o'],
-           ['x', 'x', nil],
-           ['x', 'o', 'o']]
-        end
+        board.spaces = [['x', nil, 'o'],
+                        ['x', 'x', nil],
+                        ['x', 'o', 'o']]
       end
 
-      it 'should return that character' do
-        expect(board.winning_character).to eq('x')
+      it 'should return that marker' do
+        expect(board.winning_marker).to eq('x')
       end
     end
 
-    context 'with a complete diagonal of one character' do
+    context 'with a complete diagonal of one marker' do
       context 'from the top-left to the bottom-right' do
-        context 'with an odd size' do
-          before do
-            allow(board).to receive(:spaces) do
-              [['x', nil, 'o'],
-               [nil, 'x', nil],
-               ['o', 'x', 'x']]
-            end
-          end
-
-          it 'should return that character' do
-            expect(board.winning_character).to eq('x')
-          end
+        before do
+          board.spaces = [['x', nil, 'o'],
+                          [nil, 'x', nil],
+                          ['o', 'x', 'x']]
         end
 
-        context 'with an even size' do
-          let (:board) { described_class.new(4) }
-
-          before do
-            allow(board).to receive(:spaces) do
-              [['x', nil, 'o', 'o'],
-               [nil, 'x', nil, 'o'],
-               ['o', 'x', 'x', 'x'],
-               ['o', 'o', 'x', 'x']]
-            end
-          end
-
-          it 'should return that character' do
-            expect(board.winning_character).to eq('x')
-          end
+        it 'should return that marker' do
+          expect(board.winning_marker).to eq('x')
         end
       end
 
       context 'from the bottom-left to the top-right' do
-        context 'with an odd size' do
-          before do
-            allow(board).to receive(:spaces) do
-              [['o', 'o', 'x'],
-               [nil, 'x', nil],
-               ['x', 'o', 'x']]
-            end
-          end
-
-          it 'should return that character' do
-            expect(board.winning_character).to eq('x')
-          end
+        before do
+          board.spaces = [['o', 'o', 'x'],
+                          [nil, 'x', nil],
+                          ['x', 'o', 'x']]
         end
 
-        context 'with an even size' do
-          let (:board) { described_class.new(4) }
-
-          before do
-            allow(board).to receive(:spaces) do
-              [['o', 'o', 'o', 'x'],
-               ['x', nil, 'x', nil],
-               ['o', 'x', 'o', 'x'],
-               ['x', 'o', 'x', 'o']]
-            end
-          end
-
-          it 'should return that character' do
-            expect(board.winning_character).to eq('x')
-          end
+        it 'should return that marker' do
+          expect(board.winning_marker).to eq('x')
         end
       end
     end
 
-    context 'without a complete row, column, or diagonal of one character' do
+    context 'without a complete row, column, or diagonal of one marker' do
       before do
-        allow(board).to receive(:spaces) do
-          [['x', 'x', 'o'],
-           ['o', 'x', 'x'],
-           ['x', 'o', 'o']]
-        end
+        board.spaces = [['x', 'x', 'o'],
+                        ['o', 'x', 'x'],
+                        ['x', 'o', 'o']]
       end
 
       it 'should return nil' do
-        expect(board.winning_character).to be_nil
+        expect(board.winning_marker).to be_nil
+      end
+    end
+  end
+
+  describe '#place_marker' do
+    before do
+      board.spaces = [['x', nil, 'o'],
+                      [nil, 'x', nil],
+                      ['o', 'o', 'x']]
+    end
+
+    context 'on an occupied space' do
+      it 'should throw a TicTacToe::InvalidMoveError' do
+        expect{ board.place_marker(0, 0, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'This space is occupied')
+      end
+    end
+
+    context 'with invalid coordinates' do
+      it 'should throw a TicTacToe::InvalidMoveError' do
+        expect{ board.place_marker(5, 8, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'Invalid row/column')
+      end
+    end
+
+    context 'on an open space' do
+      it 'should place the marker in that space' do
+        board.place_marker(0, 1, 'x')
+
+        expect(board.spaces[0][1]).to eq('x')
       end
     end
   end
