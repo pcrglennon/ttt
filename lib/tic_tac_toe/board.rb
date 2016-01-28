@@ -53,9 +53,9 @@ module TicTacToe
 
     def valid_space?(row_index, column_index)
       if invalid_space?(row_index, column_index)
-        raise TicTacToe::InvalidMoveError, 'Invalid row/column'
+        raise InvalidMoveError, 'Invalid row/column'
       elsif occupied_space?(row_index, column_index)
-        raise TicTacToe::InvalidMoveError, 'This space is occupied'
+        raise InvalidMoveError, 'This space is occupied'
       else
         true
       end

@@ -115,13 +115,13 @@ describe TicTacToe::Board do
     end
 
     context 'on an occupied space' do
-      it 'should throw a TicTacToe::InvalidMoveError' do
+      it 'should raise a TicTacToe::InvalidMoveError' do
         expect{ board.place_marker(0, 0, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'This space is occupied')
       end
     end
 
     context 'with invalid coordinates' do
-      it 'should throw a TicTacToe::InvalidMoveError' do
+      it 'should raise a TicTacToe::InvalidMoveError' do
         expect{ board.place_marker(5, 8, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'Invalid row/column')
       end
     end
