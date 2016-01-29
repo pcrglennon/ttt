@@ -6,7 +6,7 @@ describe TicTacToe::Board do
   describe 'constructor' do
     context 'with a size argument' do
       it 'should set the board\'s size to the value of the argument' do
-        expect(described_class.new(size: 4).size).to eq(4)
+        expect(described_class.new(4).size).to eq(4)
       end
     end
 
@@ -39,70 +39,6 @@ describe TicTacToe::Board do
 
       it 'should return false' do
         expect(board.full?).to be_falsy
-      end
-    end
-  end
-
-  describe '#winning_marker' do
-    context 'with a complete row of one marker' do
-      before do
-        board.spaces = [['x', 'x', 'x'],
-                        [nil, 'o', nil],
-                        ['o', 'o', nil]]
-      end
-
-      it 'should return that marker' do
-        expect(board.winning_marker).to eq('x')
-      end
-    end
-
-    context 'with a complete column of one marker' do
-      before do
-        board.spaces = [['x', nil, 'o'],
-                        ['x', 'x', nil],
-                        ['x', 'o', 'o']]
-      end
-
-      it 'should return that marker' do
-        expect(board.winning_marker).to eq('x')
-      end
-    end
-
-    context 'with a complete diagonal of one marker' do
-      context 'from the top-left to the bottom-right' do
-        before do
-          board.spaces = [['x', nil, 'o'],
-                          [nil, 'x', nil],
-                          ['o', 'x', 'x']]
-        end
-
-        it 'should return that marker' do
-          expect(board.winning_marker).to eq('x')
-        end
-      end
-
-      context 'from the bottom-left to the top-right' do
-        before do
-          board.spaces = [['o', 'o', 'x'],
-                          [nil, 'x', nil],
-                          ['x', 'o', 'x']]
-        end
-
-        it 'should return that marker' do
-          expect(board.winning_marker).to eq('x')
-        end
-      end
-    end
-
-    context 'without a complete row, column, or diagonal of one marker' do
-      before do
-        board.spaces = [['x', 'x', 'o'],
-                        ['o', 'x', 'x'],
-                        ['x', 'o', 'o']]
-      end
-
-      it 'should return nil' do
-        expect(board.winning_marker).to be_nil
       end
     end
   end
