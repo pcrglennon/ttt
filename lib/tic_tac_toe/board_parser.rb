@@ -4,21 +4,6 @@ module TicTacToe
 
     def initialize(spaces)
       @spaces = spaces
-      @board_size = spaces.size
-    end
-
-    def winning_marker
-      complete = complete_sequence
-      complete[0] unless complete.nil?
-    end
-
-    private
-
-    attr_reader :board_size
-
-    # Returns the first sequence with identical (non-nil) markers
-    def complete_sequence
-      sequences.find { |s| s == s.compact && s.uniq.count == 1 }
     end
 
     # Returns all of the complete sequences of spaces
@@ -38,6 +23,22 @@ module TicTacToe
 
     def diagonals
       [top_left_diagonal, top_right_diagonal]
+    end
+
+    def winning_marker
+      complete = complete_sequence
+      complete[0] unless complete.nil?
+    end
+
+    private
+
+    def board_size
+      spaces.size
+    end
+
+    # Returns the first sequence with identical (non-nil) markers
+    def complete_sequence
+      sequences.find { |s| s == s.compact && s.uniq.count == 1 }
     end
 
     def top_left_diagonal
