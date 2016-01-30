@@ -6,17 +6,64 @@ describe TicTacToe::CLI do
   describe '#process_input' do
     before do
       allow(STDOUT).to receive(:print)
-      allow(STDIN).to receive(:gets) { "1,0  \n" }
+      allow(STDOUT).to receive(:puts)
+      allow(STDIN).to receive(:gets) { "foobar  \n" }
     end
 
     it 'should format and print the prompt over STDOUT' do
-      cli.process_input('Coordinates')
+      cli.process_input('Response')
 
-      expect(STDOUT).to have_received(:print).with('Coordinates: ')
+      expect(STDOUT).to have_received(:print).with('Response: ')
     end
 
     it 'should return the normalized user input' do
-      expect(cli.process_input('Coordinates')).to eq('1,0')
+      expect(cli.process_input('Response')).to eq('foobar')
+    end
+
+    context 'with allowed responses' do
+      let(:allowed_responses) { ['Y', 'N'] }
+
+      it 'should include the allowed responses in the prompt' do
+        allow(STDIN).to receive(:gets) { "Y \n" }
+
+        cli.process_input('Response', allowed: allowed_responses)
+
+        expect(STDOUT).to have_received(:print).with('Response [Y/N]: ')
+      end
+
+      context 'when input is not in the allowed responses' do
+        before do
+          allow(STDIN).to receive(:gets).and_return("X  \n", "Y \n")
+          cli.process_input('Response', allowed: allowed_responses)
+        end
+
+        it 'should print an error message' do
+          expect(STDOUT).to have_received(:puts).with('Invalid response: X')
+        end
+
+        it 'should repeat the prompt' do
+          expect(STDOUT).to have_received(:print).with('Response [Y/N]: ').twice
+        end
+      end
+    end
+
+    context 'with disallowed responses' do
+      let(:disallowed_responses) { ['X'] }
+
+      context 'when input is in the disallowed responses' do
+        before do
+          allow(STDIN).to receive(:gets).and_return("X  \n", "Y \n")
+          cli.process_input('Response', disallowed: disallowed_responses)
+        end
+
+        it 'should print an error message' do
+          expect(STDOUT).to have_received(:puts).with('Invalid response: X')
+        end
+
+        it 'should repeat the prompt' do
+          expect(STDOUT).to have_received(:print).with('Response: ').twice
+        end
+      end
     end
   end
 
@@ -36,27 +83,40 @@ describe TicTacToe::CLI do
     end
   end
 
-  describe '#board_string' do
-    let(:board) { TicTacToe::Board.new }
+  describe '#puts' do
+    before { allow(STDOUT).to receive(:puts) }
 
-    before do
-      allow(STDOUT).to receive(:print)
+    it 'should call STDIN.puts' do
+      cli.puts('foobar')
 
-      board.spaces = [['x', 'o', 'x'],
-                      ['o', 'x', 'o'],
-                      ['o', 'x', 'x']]
+      expect(STDOUT).to have_received(:puts).with('foobar')
     end
+  end
 
-    it 'should return a formatted representation of the board' do
-      board_string = <<-BOARD
-        X 1   2   3
-      Y   ---------
+  describe '#board_string' do
+    let(:board) do
+      TicTacToe::Board.new.tap do |b|
+       b.spaces = [['x', 'o', 'x'],
+                   ['o', 'x', 'o'],
+                   ['o', 'x', 'x']]
+      end
+    end
+    let(:board_string) do
+      <<-BOARD
+       X  1   2   3
+      Y
       1   x | o | x
+          ---------
       2   o | x | o
+          ---------
       3   o | x | x
       BOARD
+    end
 
-      expect(cli.board_string(board)).to match(board_string)
+    before { cli.send(:board=, board) }
+
+    it 'should return a formatted representation of the board' do
+      expect(cli.board_string).to match(board_string)
     end
   end
 end
