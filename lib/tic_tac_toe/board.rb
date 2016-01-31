@@ -39,7 +39,9 @@ module TicTacToe
     end
 
     def empty_spaces
-      Array.new(size).fill(Array.new(size))
+      (0...size).each_with_object([]) do |i, arr|
+        arr[i] = Array.new(size)
+      end
     end
   end
 end

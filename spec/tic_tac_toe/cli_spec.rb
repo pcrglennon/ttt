@@ -68,10 +68,10 @@ describe TicTacToe::CLI do
   end
 
   describe '#parse_move' do
-    it 'should parse the user input into row & column indices' do
-      allow(cli).to receive(:process_input) { '1,0' }
+    it 'should parse the user input into zero-indexed row & column indices' do
+      allow(cli).to receive(:process_input) { '3,2' }
 
-      expect(cli.parse_move).to eq([1, 0])
+      expect(cli.parse_move).to eq([2, 1])
     end
 
     context 'with invalid format' do
@@ -113,10 +113,8 @@ describe TicTacToe::CLI do
       BOARD
     end
 
-    before { cli.send(:board=, board) }
-
     it 'should return a formatted representation of the board' do
-      expect(cli.board_string).to match(board_string)
+      expect(cli.board_string(board.spaces)).to match(board_string)
     end
   end
 end

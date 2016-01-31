@@ -16,28 +16,26 @@ module TicTacToe
         raise InvalidMoveError, 'Invalid format (must match: X,Y)'
       end
 
-      input.split(',').map(&:to_i)
+      input.split(',').map{ |i| i.to_i - 1 }
     end
 
     def puts(text)
       STDOUT.puts(text)
     end
 
-    def board_string
+    def board_string(rows)
       [
-        " X  #{(1..board.size).to_a.join('   ')}",
+        " X  #{(1..rows.size).to_a.join('   ')}",
         "Y",
-        board_row_strings
+        board_row_strings(rows)
       ].flatten.join("\n")
     end
 
-    def print_board
-      STDOUT.puts(board_string)
+    def print_board(rows)
+      STDOUT.puts(board_string(rows))
     end
 
     private
-
-    attr_accessor :board
 
     def collect_input(prompt)
       STDOUT.print("#{prompt}: ")
@@ -66,14 +64,14 @@ module TicTacToe
       end
     end
 
-    def board_row_strings
-      board.spaces.map.with_index do |row, i|
+    def board_row_strings(rows)
+      rows.map.with_index do |row, i|
         "#{i + 1}   #{row.join(' | ')}"
-      end.join(board_row_divider)
+      end.join(board_row_divider(rows.length))
     end
 
-    def board_row_divider
-      "\n    #{"---" * board.size}\n"
+    def board_row_divider(length)
+      "\n    #{"---" * length}\n"
     end
 
     def move_coordinates_format
