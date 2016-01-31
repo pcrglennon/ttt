@@ -53,8 +53,12 @@ module TicTacToe
 
     def board_row_strings(rows)
       rows.map.with_index do |row, i|
-        "#{i + 1}   #{row.join(' | ')}"
+        "#{i + 1}   #{board_row_string(row)}"
       end.join(board_row_divider(rows.length))
+    end
+
+    def board_row_string(row)
+      row.map { |marker| marker.nil? ? ' ' : marker }.join(' | ')
     end
 
     def board_row_divider(length)

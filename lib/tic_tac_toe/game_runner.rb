@@ -30,7 +30,7 @@ module TicTacToe
 
     def next_move
       begin
-        row, column = cli.parse_move
+        column, row = cli.parse_move
         board.place_marker(row, column, current_player.marker)
         toggle_current_player
       rescue InvalidMoveError => e
@@ -48,12 +48,25 @@ module TicTacToe
       @current_player = current_player == players[0] ? players[1] : players[0]
     end
 
-    def game_winner_formatted
+    def print_result
+      if game_winner.nil?
+        cli.puts(game_winner_message)
+      else
+        cli.puts(draw_game_message)
+      end
+      cli.print_board(board.spaces)
+    end
+
+    def game_winner_message
       "Victory to #{game_winner.formatted}!"
     end
 
+    def draw_game_message
+      "Draw Game!"
+    end
+
     def initialize_player_two
-      response = cli.process_input('Choose Opponent: ', allowed: ['Computer', 'Human'])
+      response = cli.process_input('Choose Opponent', allowed: ['Computer', 'Human'])
       response == 'Human' ? Player.new(2, 'O') : ComputerPlayer.new(2, 'O')
     end
   end
