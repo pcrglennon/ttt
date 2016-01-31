@@ -9,7 +9,7 @@ module TicTacToe
     end
 
     def initialize_players
-      players << Player.new('X')
+      players << Player.new(1, 'X')
       players << initialize_player_two
       @current_player = players[0]
     end
@@ -20,7 +20,12 @@ module TicTacToe
     end
 
     def game_over?
-      game_winner || board.full?
+      board.full? || game_winner != nil
+    end
+
+    def game_winner
+      winning_marker = parser.winning_marker
+      winning_marker && players.find { |p| p.marker == winning_marker }
     end
 
     def next_move
@@ -39,17 +44,17 @@ module TicTacToe
       BoardParser.new(board.spaces)
     end
 
-    def game_winner
-      parser.winning_marker != nil
-    end
-
     def toggle_current_player
       @current_player = current_player == players[0] ? players[1] : players[0]
     end
 
+    def game_winner_formatted
+      "Victory to #{game_winner.formatted}!"
+    end
+
     def initialize_player_two
       response = cli.process_input('Choose Opponent: ', allowed: ['Computer', 'Human'])
-      response == 'Human' ? Player.new('O') : ComputerPlayer.new('O')
+      response == 'Human' ? Player.new(2, 'O') : ComputerPlayer.new(2, 'O')
     end
   end
 end

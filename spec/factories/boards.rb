@@ -12,13 +12,19 @@ FactoryGirl.define do
 
     factory :draw_game_board do
       spaces [['X', 'O', 'X'],
-              ['O', 'X', 'O'],
-              ['O', 'X', 'X']]
+              ['O', 'X', 'X'],
+              ['O', 'X', 'O']]
     end
 
     factory :x_winner_board do
       spaces [[nil, 'X', nil],
               ['O', 'X', 'O'],
+              ['O', 'X', 'X']]
+    end
+
+    factory :o_winner_board do
+      spaces [[nil, 'X', 'O'],
+              ['O', 'O', 'X'],
               ['O', 'X', 'X']]
     end
   end

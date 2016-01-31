@@ -18,24 +18,28 @@ describe TicTacToe::GameRunner do
       expect(runner.players[0].marker).to eq('X')
     end
 
-    it 'should create Player Two' do
-      runner.initialize_players
+    context 'with a human opponent selected' do
+      before do
+        allow(runner.cli).to receive(:process_input).and_return('Human')
+        runner.initialize_players
+      end
 
-      expect(runner.players[1]).to be_a(TicTacToe::Player)
-    end
+      it 'should create Player Two' do
+        expect(runner.players[1]).to be_a(TicTacToe::Player)
+      end
 
-    it 'should create Player Two with an \'O\' marker' do
-      runner.initialize_players
-
-      expect(runner.players[1].marker).to eq('O')
+      it 'should create Player Two with an \'O\' marker' do
+        expect(runner.players[1].marker).to eq('O')
+      end
     end
 
     context 'with a computer opponent selected' do
-      before { allow(runner.cli).to receive(:process_input).and_return('Computer') }
+      before do
+        allow(runner.cli).to receive(:process_input).and_return('Computer')
+        runner.initialize_players
+      end
 
       it 'should create a computer Player Two' do
-        runner.initialize_players
-
         expect(runner.players[1]).to be_a(TicTacToe::ComputerPlayer)
       end
     end
@@ -70,7 +74,10 @@ describe TicTacToe::GameRunner do
     end
 
     context 'with a game which has been won' do
-      before { runner.board = build(:x_winner_board) }
+      before do
+        runner.players = [build(:player_one), build(:player_two)]
+        runner.board = build(:x_winner_board)
+      end
 
       it 'should return true' do
         expect(runner.game_over?).to be_truthy
@@ -90,6 +97,45 @@ describe TicTacToe::GameRunner do
 
       it 'should return false' do
         expect(runner.game_over?).to be_falsy
+      end
+    end
+  end
+
+  describe '#game_winner' do
+    let(:player_one) { build(:player_one) }
+    let(:player_two) { build(:player_two) }
+
+    before { runner.players = [player_one, player_two] }
+
+    context 'with a game which resulted in a draw' do
+      before { runner.board = build(:draw_game_board) }
+
+      it 'should return nil' do
+        expect(runner.game_winner).to be_nil
+      end
+    end
+
+    context 'with a game which has been won by Player One' do
+      before { runner.board = build(:x_winner_board) }
+
+      it 'should return Player One' do
+        expect(runner.game_winner).to eq(player_one)
+      end
+    end
+
+    context 'with a game which has been won by Player Two' do
+      before { runner.board = build(:o_winner_board) }
+
+      it 'should return Player Two' do
+        expect(runner.game_winner).to eq(player_two)
+      end
+    end
+
+    context 'with an incomplete game' do
+      before { runner.board = build(:incomplete_board) }
+
+      it 'should return nil' do
+        expect(runner.game_winner).to be_nil
       end
     end
   end
