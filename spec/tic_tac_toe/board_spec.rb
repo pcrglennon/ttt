@@ -19,26 +19,18 @@ describe TicTacToe::Board do
 
   describe '#full?' do
     context 'with no available spaces' do
-      before do
-        board.spaces = [['x', 'o', 'x'],
-                        ['o', 'x', 'o'],
-                        ['o', 'x', 'x']]
-      end
+      let(:draw_game_board) { build(:draw_game_board) }
 
       it 'should return true' do
-        expect(board.full?).to be_truthy
+        expect(draw_game_board.full?).to be_truthy
       end
     end
 
     context 'with available spaces' do
-      before do
-        board.spaces = [['x', nil, 'o'],
-                        [nil, 'x', nil],
-                        ['o', 'o', 'x']]
-      end
+      let(:incomplete_board) { build(:incomplete_board) }
 
       it 'should return false' do
-        expect(board.full?).to be_falsy
+        expect(incomplete_board.full?).to be_falsy
       end
     end
   end

@@ -2,29 +2,6 @@ require 'spec_helper'
 
 describe TicTacToe::GameRunner do
   let(:runner) { described_class.new }
-  let(:draw_game_board) do
-    TicTacToe::Board.new.tap do |board|
-      board.spaces = [['X', 'O', 'X'],
-                      ['O', 'X', 'O'],
-                      ['O', 'X', 'X']]
-    end
-  end
-  let(:x_winner_board) do
-    TicTacToe::Board.new.tap do |board|
-      board.spaces = [[nil, 'X', nil],
-                      ['O', 'X', 'O'],
-                      ['O', 'X', 'X']]
-    end
-  end
-  let(:incomplete_board) do
-    TicTacToe::Board.new.tap do |board|
-      board.spaces = [[nil, 'O', nil],
-                      ['X', 'X', nil],
-                      ['O', 'X', 'O']]
-    end
-  end
-  let(:empty_board) { TicTacToe::Board.new }
-  let(:players) { [TicTacToe::Player.new('X'), TicTacToe::Player.new('O')] }
 
   describe '#initialize_players' do
     before { allow(runner.cli).to receive(:process_input).and_return('Human') }
@@ -65,10 +42,12 @@ describe TicTacToe::GameRunner do
   end
 
   describe '#new_game!' do
+    let(:players) { [build(:player_one), build(:player_two)] }
+
     before do
       runner.players = players
       runner.current_player = players[1]
-      runner.board = draw_game_board
+      runner.board = build(:draw_game_board)
       runner.new_game!
     end
 
@@ -83,7 +62,7 @@ describe TicTacToe::GameRunner do
 
   describe '#game_over?' do
     context 'with a game which resulted in a draw' do
-      before { runner.board = draw_game_board }
+      before { runner.board = build(:draw_game_board) }
 
       it 'should return true' do
         expect(runner.game_over?).to be_truthy
@@ -91,7 +70,7 @@ describe TicTacToe::GameRunner do
     end
 
     context 'with a game which has been won' do
-      before { runner.board = x_winner_board }
+      before { runner.board = build(:x_winner_board) }
 
       it 'should return true' do
         expect(runner.game_over?).to be_truthy
@@ -99,7 +78,15 @@ describe TicTacToe::GameRunner do
     end
 
     context 'with an incomplete game' do
-      before { runner.board = incomplete_board }
+      before { runner.board = build(:incomplete_board) }
+
+      it 'should return false' do
+        expect(runner.game_over?).to be_falsy
+      end
+    end
+
+    context 'with a new game' do
+      before { runner.board = build(:empty_board) }
 
       it 'should return false' do
         expect(runner.game_over?).to be_falsy
@@ -108,6 +95,8 @@ describe TicTacToe::GameRunner do
   end
 
   describe '#next_move' do
+    let(:players) { [build(:player_one), build(:player_two)] }
+
     before do
       runner.players = players
       runner.current_player = players[0]
