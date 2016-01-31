@@ -11,12 +11,16 @@ module TicTacToe
     def initialize_players
       players << Player.new('X')
       players << initialize_player_two
-      @current_player = players.first
+      @current_player = players[0]
     end
 
     def new_game!
       @board = Board.new
-      @current_player = players.first
+      @current_player = players[0]
+    end
+
+    def game_over?
+      game_winner || board.full?
     end
 
     def next_move
@@ -31,12 +35,16 @@ module TicTacToe
 
     private
 
+    def parser
+      BoardParser.new(board.spaces)
+    end
+
+    def game_winner
+      parser.winning_marker != nil
+    end
+
     def toggle_current_player
-      if current_player == players.first
-        @current_player = players.last
-      else
-        @current_player = players.first
-      end
+      @current_player = current_player == players[0] ? players[1] : players[0]
     end
 
     def initialize_player_two
