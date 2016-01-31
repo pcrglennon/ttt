@@ -46,25 +46,6 @@ describe TicTacToe::CLI do
         end
       end
     end
-
-    context 'with disallowed responses' do
-      let(:disallowed_responses) { ['X'] }
-
-      context 'when input is in the disallowed responses' do
-        before do
-          allow(STDIN).to receive(:gets).and_return("X  \n", "Y \n")
-          cli.process_input('Response', disallowed: disallowed_responses)
-        end
-
-        it 'should print an error message' do
-          expect(STDOUT).to have_received(:puts).with('Invalid response: X')
-        end
-
-        it 'should repeat the prompt' do
-          expect(STDOUT).to have_received(:print).with('Response: ').twice
-        end
-      end
-    end
   end
 
   describe '#parse_move' do

@@ -1,10 +1,8 @@
 module TicTacToe
   class CLI
-    def process_input(prompt, allowed: [], disallowed: [])
+    def process_input(prompt, allowed: [])
       if allowed.length > 0
         process_input_allowed(prompt, allowed)
-      elsif disallowed.length > 0
-        process_input_disallowed(prompt, disallowed)
       else
         collect_input(prompt)
       end
@@ -49,17 +47,6 @@ module TicTacToe
           return input
         else
           STDOUT.puts("Invalid response: #{input}")
-        end
-      end
-    end
-
-    def process_input_disallowed(prompt, disallowed)
-      loop do
-        input = collect_input(prompt)
-        if disallowed.include?(input)
-          STDOUT.puts("Invalid response: #{input}")
-        else
-          return input
         end
       end
     end
