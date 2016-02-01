@@ -8,26 +8,27 @@ module TicTacToe
 
     # Returns all of the complete sequences of spaces
     def sequences
-      rows + columns + diagonals
+      @sequences ||= rows + columns + diagonals
     end
 
     def rows
-      spaces
+      @rows ||= spaces.map.with_index { |values, i| Row.new(i, values) }
     end
 
     def columns
-      (0...board_size).each_with_object([]) do |i, cols|
-        cols << rows.collect { |row| row[i] }
+      @columns ||= (0...board_size).each_with_object([]) do |i, cols|
+        values = spaces.collect { |values| values[i] }
+        cols << Column.new(i, values)
       end
     end
 
     def diagonals
-      [top_left_diagonal, top_right_diagonal]
+      @diagonals ||= [top_left_diagonal, bottom_left_diagonal]
     end
 
     def winning_marker
       complete = complete_sequence
-      complete[0] unless complete.nil?
+      complete.values[0] unless complete.nil?
     end
 
     private
@@ -36,17 +37,22 @@ module TicTacToe
       spaces.size
     end
 
-    # Returns the first sequence with identical (non-nil) markers
     def complete_sequence
-      sequences.find { |s| s == s.compact && s.uniq.count == 1 }
+      sequences.find { |s| s.complete? }
     end
 
     def top_left_diagonal
-      (0...board_size).each_with_object([]) { |i, d| d << spaces[i][i] }
+      values = (0...board_size).each_with_object([]) do
+        |i, d| d << spaces[i][i]
+      end
+      Diagonal.new('top_left', values)
     end
 
-    def top_right_diagonal
-      (0...board_size).each_with_object([]) { |i, d| d << spaces[(board_size - 1) - i][i] }
+    def bottom_left_diagonal
+      values = (0...board_size).each_with_object([]) do
+        |i, d| d << spaces[(board_size - 1) - i][i]
+      end
+      Diagonal.new('bottom_left', values)
     end
   end
 end

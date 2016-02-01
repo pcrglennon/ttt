@@ -10,26 +10,55 @@ describe TicTacToe::BoardParser do
   let(:parser) { described_class.new(spaces) }
 
   describe '#rows' do
+    it 'should return an array of TicTacToe::Row objects' do
+      expect(parser.rows).to satisfy do |rows|
+        rows.each { |row| row.is_a?(TicTacToe::Row) }
+      end
+    end
+
     it 'should return the rows of the board' do
-      expect(parser.rows).to match_array([['x', 'x', 'x'], [nil, 'o', nil], ['o', 'o', nil]])
+      expect(parser.rows).to satisfy do |rows|
+        rows[0].index == 0 && rows[0].values == ['x', 'x', 'x']
+        rows[1].index == 1 && rows[1].values == [nil, 'o', nil]
+        rows[2].index == 2 && rows[2].values == ['o', 'o', nil]
+      end
     end
   end
 
   describe '#columns' do
+    it 'should return an array of TicTacToe::Column objects' do
+      expect(parser.columns).to satisfy do |columns|
+        columns.each { |column| column.is_a?(TicTacToe::Column) }
+      end
+    end
+
     it 'should return the columns of the board' do
-      expect(parser.columns).to match_array([['x', nil, 'o'], ['x', 'o', 'o'], ['x', nil, nil]])
+      expect(parser.columns).to satisfy do |columns|
+        columns[0].index == 0 && columns[0].values == ['x', nil, 'o']
+        columns[1].index == 1 && columns[1].values == ['x', 'o', 'o']
+        columns[2].index == 2 && columns[2].values == ['x', nil, nil]
+      end
     end
   end
 
   describe '#diagonals' do
+    it 'should return an array of TicTacToe::Diagonal objects' do
+      expect(parser.diagonals).to satisfy do |diagonals|
+        diagonals.each { |diagonal| diagonal.is_a?(TicTacToe::Diagonal) }
+      end
+    end
+
     it 'should return the two diagonal sequences of the board' do
-      expect(parser.diagonals).to match_array([['x', 'o', nil], ['o', 'o', 'x']])
+      expect(parser.diagonals).to satisfy do |diagonals|
+        diagonals[0].origin == 'top_left' && diagonals[0].values == ['x', 'o', nil]
+        diagonals[1].origin == 'bottom_left' && diagonals[1].values == ['o', 'o', 'x']
+      end
     end
   end
 
   describe '#sequences' do
     it 'should return the rows, columns, and diagonals' do
-      expect(parser.sequences).to match_array(parser.rows + parser.columns + parser.diagonals)
+      expect(parser.sequences).to eq(parser.rows + parser.columns + parser.diagonals)
     end
   end
 
