@@ -67,7 +67,7 @@ describe TicTacToe::BoardParser do
       let(:parser) do
         spaces = [['x', 'x', 'x'],
                   [nil, 'o', nil],
-                  ['o', 'o', nil]]
+                  ['o', nil, nil]]
         described_class.new(spaces)
       end
 
@@ -94,7 +94,7 @@ describe TicTacToe::BoardParser do
         let(:parser) do
           spaces = [['x', nil, 'o'],
                     [nil, 'x', nil],
-                    ['o', 'x', 'x']]
+                    ['o', nil, 'x']]
           described_class.new(spaces)
         end
 

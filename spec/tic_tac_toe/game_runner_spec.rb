@@ -42,6 +42,14 @@ describe TicTacToe::GameRunner do
       it 'should create a computer Player Two' do
         expect(runner.players[1]).to be_a(TicTacToe::ComputerPlayer)
       end
+
+      it 'should create a computer Player Two with an \'O\' marker' do
+        expect(runner.players[1].marker).to eq('O')
+      end
+
+      it 'should create a computer Player Two with an \'X\' opponent_marker' do
+        expect(runner.players[1].opponent_marker).to eq('X')
+      end
     end
   end
 

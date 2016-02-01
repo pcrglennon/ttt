@@ -74,7 +74,11 @@ module TicTacToe
 
     def initialize_player_two
       response = cli.process_input('Choose Opponent', allowed: ['Computer', 'Human'])
-      response == 'Human' ? Player.new(2, 'O') : ComputerPlayer.new(2, 'O')
+      if response == 'Human'
+        Player.new(2, 'O')
+      else
+        ComputerPlayer.new(2, 'O', players[0].marker)
+      end
     end
 
     def print_game_result

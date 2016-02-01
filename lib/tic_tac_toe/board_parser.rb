@@ -1,9 +1,10 @@
 module TicTacToe
   class BoardParser
-    attr_reader :spaces
+    attr_reader :spaces, :board_size
 
     def initialize(spaces)
       @spaces = spaces
+      @board_size = spaces.size
     end
 
     # Returns all of the complete sequences of spaces
@@ -32,10 +33,6 @@ module TicTacToe
     end
 
     private
-
-    def board_size
-      spaces.size
-    end
 
     def complete_sequence
       sequences.find { |s| s.complete? }

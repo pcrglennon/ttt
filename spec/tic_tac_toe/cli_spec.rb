@@ -87,20 +87,20 @@ describe TicTacToe::CLI do
   describe '#board_string' do
     let(:board) do
       TicTacToe::Board.new.tap do |b|
-       b.spaces = [['x', 'o', 'x'],
-                   ['o', 'x', 'o'],
-                   ['o', 'x', 'x']]
+        b.spaces = [['X', 'o', 'X'],
+                    ['o', 'X', 'o'],
+                    ['o', 'X', 'X']]
       end
     end
     let(:board_string) do
       <<-BOARD
        X  1   2   3
       Y
-      1   x | o | x
+      1   X | O | X
           ---------
-      2   o | x | o
+      2   O | X | O
           ---------
-      3   o | x | x
+      3   O | X | X
       BOARD
     end
 
