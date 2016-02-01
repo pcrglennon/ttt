@@ -8,7 +8,7 @@ module TicTacToe
       @cli = CLI.new
     end
 
-    def main_loop
+    def run
       cli.puts(welcome_message)
       initialize_players
       loop do
@@ -32,7 +32,7 @@ module TicTacToe
 
     def play_game
       until game_over?
-        print_game_state
+        cli.print_board(board.spaces)
         next_move
       end
       print_game_result
@@ -53,7 +53,7 @@ module TicTacToe
         board.place_marker(row, column, current_player.marker)
         toggle_current_player
       rescue InvalidMoveError => e
-        cli.puts(e.message)
+        cli.puts("\n#{e.message}")
       end
     end
 
@@ -77,23 +77,17 @@ module TicTacToe
       response == 'Human' ? Player.new(2, 'O') : ComputerPlayer.new(2, 'O')
     end
 
-    def print_game_state
-      cli.puts("\n\n")
-      cli.print_board(board)
-    end
-
     def print_game_result
       cli.puts(game_result_message)
-      cli.puts("\n\n")
       cli.print_board(board.spaces)
     end
 
     def welcome_message
-      "\nWelcome to TicTacToe v0.1.0!"
+      "\nWelcome to TicTacToe v0.1.0\n"
     end
 
     def goodbye_message
-      "\n\nGoodbye!\n"
+      "\nGoodbye!\n\n"
     end
 
     def game_result_message

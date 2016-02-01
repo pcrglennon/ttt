@@ -66,11 +66,11 @@ describe TicTacToe::GameRunner do
 
   describe '#play_game' do
     before do
+      runner.board = build(:empty_board)
       allow(runner).to receive(:game_over?).and_return(*([false] * 5), true)
+      allow(runner.cli).to receive(:print_board)
       allow(runner).to receive(:next_move)
       allow(runner).to receive(:print_game_result)
-      allow(runner.cli).to receive(:print_board)
-      allow(runner.cli).to receive(:puts)
       runner.play_game
     end
 
@@ -218,7 +218,7 @@ describe TicTacToe::GameRunner do
       it 'should log the error message' do
         runner.next_move
 
-        expect(runner.cli).to have_received(:puts).with('Foobar')
+        expect(runner.cli).to have_received(:puts).with(/Foobar/)
       end
     end
   end
@@ -241,7 +241,7 @@ describe TicTacToe::GameRunner do
     end
   end
 
-  describe 'main_loop' do
+  describe '#run' do
     before do
       allow(runner).to receive(:initialize_players)
       allow(runner).to receive(:new_game!)
@@ -249,11 +249,11 @@ describe TicTacToe::GameRunner do
       allow(runner).to receive(:play_again?).and_return(false)
 
       allow(runner.cli).to receive(:puts)
-      runner.main_loop
+      runner.run
     end
 
     it 'should print a welcome message' do
-      expect(runner.cli).to have_received(:puts).with("\nWelcome to TicTacToe v0.1.0!")
+      expect(runner.cli).to have_received(:puts).with(/Welcome to TicTacToe v0\.1\.0/)
     end
 
     it 'should initialize the players' do
@@ -276,7 +276,7 @@ describe TicTacToe::GameRunner do
 
     context 'when another game is not requested' do
       it 'should print a goodbye message' do
-        expect(runner.cli).to have_received(:puts).with("\n\nGoodbye!\n")
+        expect(runner.cli).to have_received(:puts).with(/Goodbye!/)
       end
     end
   end

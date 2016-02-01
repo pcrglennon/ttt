@@ -9,11 +9,12 @@ module TicTacToe
     end
 
     def parse_move(player)
-      input = process_input("#{player.formatted} - Enter Coordinates")
+      input = process_input("#{player.formatted} - Enter coordinates")
       unless input =~ move_coordinates_format
         raise InvalidMoveError, 'Invalid format (must match: X,Y)'
       end
 
+      # Return indices for a zero-indexed array
       input.split(',').map{ |i| i.to_i - 1 }
     end
 
@@ -30,13 +31,13 @@ module TicTacToe
     end
 
     def print_board(rows)
-      STDOUT.puts(board_string(rows))
+      STDOUT.puts("\n#{board_string(rows)}\n")
     end
 
     private
 
     def collect_input(prompt)
-      STDOUT.print("#{prompt}: ")
+      STDOUT.print("\n#{prompt}: ")
       STDIN.gets.strip
     end
 

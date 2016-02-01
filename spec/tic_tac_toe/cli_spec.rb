@@ -13,7 +13,7 @@ describe TicTacToe::CLI do
     it 'should format and print the prompt over STDOUT' do
       cli.process_input('Response')
 
-      expect(STDOUT).to have_received(:print).with('Response: ')
+      expect(STDOUT).to have_received(:print).with(/Response: /)
     end
 
     it 'should return the normalized user input' do
@@ -28,7 +28,7 @@ describe TicTacToe::CLI do
 
         cli.process_input('Response', allowed: allowed_responses)
 
-        expect(STDOUT).to have_received(:print).with('Response [Y/N]: ')
+        expect(STDOUT).to have_received(:print).with(/Response \[Y\/N\]: /)
       end
 
       context 'when input is not in the allowed responses' do
@@ -38,11 +38,11 @@ describe TicTacToe::CLI do
         end
 
         it 'should print an error message' do
-          expect(STDOUT).to have_received(:puts).with('Invalid response: X')
+          expect(STDOUT).to have_received(:puts).with(/Invalid response: X/)
         end
 
         it 'should repeat the prompt' do
-          expect(STDOUT).to have_received(:print).with('Response [Y/N]: ').twice
+          expect(STDOUT).to have_received(:print).with(/Response \[Y\/N\]: /).twice
         end
       end
     end
@@ -56,7 +56,7 @@ describe TicTacToe::CLI do
 
       cli.parse_move(player)
 
-      expect(cli).to have_received(:process_input).with("#{player.formatted} - Enter Coordinates")
+      expect(cli).to have_received(:process_input).with("#{player.formatted} - Enter coordinates")
     end
 
     it 'should parse the user input into zero-indexed row & column indices' do
@@ -106,6 +106,19 @@ describe TicTacToe::CLI do
 
     it 'should return a formatted representation of the board' do
       expect(cli.board_string(board.spaces)).to match(board_string)
+    end
+  end
+
+  describe '#print_board' do
+    let(:board) { build(:board) }
+
+    it 'should print out the board with spacing above and below' do
+      allow(STDOUT).to receive(:puts)
+      board_string = cli.board_string(board.spaces)
+
+      cli.print_board(board.spaces)
+
+      expect(STDOUT).to have_received(:puts).with("\n#{board_string}\n")
     end
   end
 end

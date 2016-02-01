@@ -22,9 +22,9 @@ module TicTacToe
 
     def valid_space?(row_index, column_index)
       if invalid_space?(row_index, column_index)
-        raise InvalidMoveError, 'Invalid row/column'
+        raise InvalidMoveError, "Invalid coordinates #{humanize_indices(row_index, column_index)}"
       elsif occupied_space?(row_index, column_index)
-        raise InvalidMoveError, 'This space is occupied'
+        raise InvalidMoveError, "Space at #{humanize_indices(row_index, column_index)} is occupied"
       else
         true
       end
@@ -36,6 +36,11 @@ module TicTacToe
 
     def occupied_space?(row_index, column_index)
       !(spaces[row_index][column_index].nil?)
+    end
+
+    # Output indices for error message in the format the user entered them
+    def humanize_indices(row_index, column_index)
+      "[#{column_index + 1},#{row_index + 1}]"
     end
 
     def empty_spaces

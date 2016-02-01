@@ -44,13 +44,13 @@ describe TicTacToe::Board do
 
     context 'on an occupied space' do
       it 'should raise a TicTacToe::InvalidMoveError' do
-        expect{ board.place_marker(0, 0, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'This space is occupied')
+        expect{ board.place_marker(0, 2, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'Space at [3,1] is occupied')
       end
     end
 
     context 'with invalid coordinates' do
       it 'should raise a TicTacToe::InvalidMoveError' do
-        expect{ board.place_marker(5, 8, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'Invalid row/column')
+        expect{ board.place_marker(5, 8, 'x') }.to raise_error(TicTacToe::InvalidMoveError, 'Invalid coordinates [9,6]')
       end
     end
 
