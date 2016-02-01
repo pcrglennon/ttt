@@ -1,7 +1,7 @@
 module TicTacToe
   class CLI
     def process_input(prompt, allowed: [])
-      if allowed.length > 0
+      if allowed.to_a.length > 0
         process_input_allowed(prompt, allowed)
       else
         collect_input(prompt)
@@ -43,12 +43,36 @@ module TicTacToe
 
     def process_input_allowed(prompt, allowed)
       loop do
-        input = collect_input("#{prompt} [#{allowed.join('/')}]")
-        if allowed.include?(input)
+        input = collect_input(allowed_prompt_message(prompt, allowed))
+        if allowed_input?(allowed, input)
           return input
         else
           STDOUT.puts("Invalid response: #{input}")
         end
+      end
+    end
+
+    def allowed_input?(allowed, input)
+      if allowed.is_a?(Range)
+        allowed.include?(parse_numeric_input(input))
+      else
+        allowed.include?(input)
+      end
+    end
+
+    def parse_numeric_input(input)
+      begin
+        Float(input)
+      rescue ArgumentError
+        false
+      end
+    end
+
+    def allowed_prompt_message(prompt, allowed)
+      if allowed.is_a?(Array)
+        "#{prompt} [#{allowed.join('/')}]"
+      else
+        "#{prompt} [#{allowed.to_s}]"
       end
     end
 

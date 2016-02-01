@@ -54,17 +54,24 @@ describe TicTacToe::GameRunner do
   end
 
   describe '#new_game!' do
+    let(:empty_5_square_board) { TicTacToe::Board.new(5) }
     let(:players) { [build(:player_one), build(:player_two)] }
 
     before do
+      allow(runner.cli).to receive(:process_input).and_return('5')
       runner.players = players
       runner.current_player = players[1]
       runner.board = build(:draw_game_board)
       runner.new_game!
     end
 
-    it 'should create a new, empty board' do
-      expect(runner.board.spaces).to match_array(TicTacToe::Board.new.spaces)
+    it 'should prompt for the size of the new board (between 3 and 9)' do
+      expect(runner.cli).to have_received(:process_input)
+        .with('Choose board size', allowed: (3..9))
+    end
+
+    it 'should create a new, empty board with the given size' do
+      expect(runner.board.spaces).to match_array(empty_5_square_board.spaces)
     end
 
     it 'should set Player One as the current player' do
@@ -177,7 +184,7 @@ describe TicTacToe::GameRunner do
     before do
       runner.players = players
       runner.current_player = players[0]
-      runner.new_game!
+      runner.board = build(:empty_board)
     end
 
     it 'should prompt the current player to make their move' do

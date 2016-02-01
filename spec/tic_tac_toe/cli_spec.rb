@@ -21,28 +21,74 @@ describe TicTacToe::CLI do
     end
 
     context 'with allowed responses' do
-      let(:allowed_responses) { ['Y', 'N'] }
+      context 'in an Array' do
+        let(:allowed_responses) { ['Y', 'N'] }
 
-      it 'should include the allowed responses in the prompt' do
-        allow(STDIN).to receive(:gets) { "Y \n" }
+        it 'should include the allowed responses in the prompt' do
+          allow(STDIN).to receive(:gets) { "Y \n" }
 
-        cli.process_input('Response', allowed: allowed_responses)
+          cli.process_input('Response', allowed: allowed_responses)
 
-        expect(STDOUT).to have_received(:print).with(/Response \[Y\/N\]: /)
+          expect(STDOUT).to have_received(:print).with(/Response \[Y\/N\]: /)
+        end
+
+        context 'when input is not in the allowed responses' do
+          before do
+            allow(STDIN).to receive(:gets).and_return("X  \n", "Y \n")
+            cli.process_input('Response', allowed: allowed_responses)
+          end
+
+          it 'should print an error message' do
+            expect(STDOUT).to have_received(:puts).with(/Invalid response: X/)
+          end
+
+          it 'should repeat the prompt' do
+            expect(STDOUT).to have_received(:print).with(/Response \[Y\/N\]: /).twice
+          end
+        end
       end
 
-      context 'when input is not in the allowed responses' do
-        before do
-          allow(STDIN).to receive(:gets).and_return("X  \n", "Y \n")
+      context 'in a Range' do
+        let(:allowed_responses) { (3..9) }
+
+        it 'should include the allowed range in the prompt' do
+          allow(STDIN).to receive(:gets) { "3 \n" }
+
           cli.process_input('Response', allowed: allowed_responses)
+
+          expect(STDOUT).to have_received(:print).with(/Response \[3\.\.9\]: /)
         end
 
-        it 'should print an error message' do
-          expect(STDOUT).to have_received(:puts).with(/Invalid response: X/)
+        context 'with numeric input' do
+          context 'not in the allowed range' do
+            before do
+              allow(STDIN).to receive(:gets).and_return("1  \n", "3 \n")
+              cli.process_input('Response', allowed: allowed_responses)
+            end
+
+            it 'should print an error message' do
+              expect(STDOUT).to have_received(:puts).with(/Invalid response: 1/)
+            end
+
+            it 'should repeat the prompt' do
+              expect(STDOUT).to have_received(:print).with(/Response \[3\.\.9\]: /).twice
+            end
+          end
         end
 
-        it 'should repeat the prompt' do
-          expect(STDOUT).to have_received(:print).with(/Response \[Y\/N\]: /).twice
+        context 'with non-numeric input' do
+          before do
+            allow(STDIN).to receive(:gets).and_return("text \n", "3 \n")
+            cli.process_input('Response', allowed: allowed_responses)
+          end
+
+          it 'should print an error message' do
+            expect(STDOUT).to have_received(:puts).with(/Invalid response: text/)
+          end
+
+          it 'should repeat the prompt' do
+            expect(STDOUT).to have_received(:print).with(/Response \[3\.\.9\]: /).twice
+          end
         end
       end
     end

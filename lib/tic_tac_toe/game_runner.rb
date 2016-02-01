@@ -26,7 +26,8 @@ module TicTacToe
     end
 
     def new_game!
-      @board = Board.new
+      size = cli.process_input('Choose board size', allowed: (3..9))
+      @board = Board.new(size.to_i)
       @current_player = players[0]
     end
 
