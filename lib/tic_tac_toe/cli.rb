@@ -8,8 +8,8 @@ module TicTacToe
       end
     end
 
-    def parse_move
-      input = process_input('Coordinates (X/Y)')
+    def parse_move(player)
+      input = process_input("#{player.formatted} - Enter Coordinates")
       unless input =~ move_coordinates_format
         raise InvalidMoveError, 'Invalid format (must match: X,Y)'
       end

@@ -49,17 +49,27 @@ describe TicTacToe::CLI do
   end
 
   describe '#parse_move' do
+    let(:player) { build(:player_one) }
+
+    it 'should prompt the current player to enter their move' do
+      allow(cli).to receive(:process_input) { '3,2' }
+
+      cli.parse_move(player)
+
+      expect(cli).to have_received(:process_input).with("#{player.formatted} - Enter Coordinates")
+    end
+
     it 'should parse the user input into zero-indexed row & column indices' do
       allow(cli).to receive(:process_input) { '3,2' }
 
-      expect(cli.parse_move).to eq([2, 1])
+      expect(cli.parse_move(player)).to eq([2, 1])
     end
 
     context 'with invalid format' do
       it 'should raise a TicTacToe::InvalidMoveError' do
         allow(cli).to receive(:process_input) { 'invalid,20,50' }
 
-        expect{ cli.parse_move }.to raise_error(TicTacToe::InvalidMoveError, 'Invalid format (must match: X,Y)')
+        expect{ cli.parse_move(player) }.to raise_error(TicTacToe::InvalidMoveError, 'Invalid format (must match: X,Y)')
       end
     end
   end

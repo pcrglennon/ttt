@@ -64,6 +64,29 @@ describe TicTacToe::GameRunner do
     end
   end
 
+  describe '#play_game' do
+    before do
+      allow(runner).to receive(:game_over?).and_return(*([false] * 5), true)
+      allow(runner).to receive(:next_move)
+      allow(runner).to receive(:print_game_result)
+      allow(runner.cli).to receive(:print_board)
+      allow(runner.cli).to receive(:puts)
+      runner.play_game
+    end
+
+    it 'should prompt for the next move until the game is over' do
+      expect(runner).to have_received(:next_move).exactly(5).times
+    end
+
+    it 'should print the current state of the board before each move' do
+      expect(runner.cli).to have_received(:print_board).exactly(5).times
+    end
+
+    it 'should print the result of the game' do
+      expect(runner).to have_received(:print_game_result)
+    end
+  end
+
   describe '#game_over?' do
     context 'with a game which resulted in a draw' do
       before { runner.board = build(:draw_game_board) }
@@ -196,6 +219,64 @@ describe TicTacToe::GameRunner do
         runner.next_move
 
         expect(runner.cli).to have_received(:puts).with('Foobar')
+      end
+    end
+  end
+
+  describe '#play_again?' do
+    context 'with user input "N"' do
+      before { allow(runner.cli).to receive(:process_input).and_return('N') }
+
+      it 'should return false' do
+        expect(runner.play_again?).to be_falsy
+      end
+    end
+
+    context 'with other user input' do
+      before { allow(runner.cli).to receive(:process_input).and_return('Y') }
+
+      it 'should return truthy' do
+        expect(runner.play_again?).to be_truthy
+      end
+    end
+  end
+
+  describe 'main_loop' do
+    before do
+      allow(runner).to receive(:initialize_players)
+      allow(runner).to receive(:new_game!)
+      allow(runner).to receive(:play_game)
+      allow(runner).to receive(:play_again?).and_return(false)
+
+      allow(runner.cli).to receive(:puts)
+      runner.main_loop
+    end
+
+    it 'should print a welcome message' do
+      expect(runner.cli).to have_received(:puts).with("\nWelcome to TicTacToe v0.1.0!")
+    end
+
+    it 'should initialize the players' do
+      expect(runner).to have_received(:initialize_players)
+    end
+
+    it 'should start a new game' do
+      expect(runner).to have_received(:new_game!)
+      expect(runner).to have_received(:play_game)
+    end
+
+    context 'when another game is requested' do
+      before { allow(runner).to receive(:play_again?).and_return(true) }
+
+      it 'should start a new game' do
+        expect(runner).to have_received(:new_game!)
+        expect(runner).to have_received(:play_game)
+      end
+    end
+
+    context 'when another game is not requested' do
+      it 'should print a goodbye message' do
+        expect(runner.cli).to have_received(:puts).with("\n\nGoodbye!\n")
       end
     end
   end
