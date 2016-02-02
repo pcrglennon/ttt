@@ -15,8 +15,26 @@ describe TicTacToe::Sequence do
     end
   end
 
+  describe '#full?' do
+    context 'with a full set of non-nil values' do
+      let(:sequence) { described_class.new(['X', 'X', 'O']) }
+
+      it 'should return true' do
+        expect(sequence.full?).to be_truthy
+      end
+    end
+
+    context 'with nil values' do
+      let(:sequence) { described_class.new(['X', 'X', nil]) }
+
+      it 'should return false' do
+        expect(sequence.full?).to be_falsy
+      end
+    end
+  end
+
   describe '#complete?' do
-    context 'with a complete set of identical values' do
+    context 'with a full set of identical, non-nil values' do
       let(:sequence) { described_class.new(['X', 'X', 'X']) }
 
       it 'should return truthy' do
@@ -24,7 +42,7 @@ describe TicTacToe::Sequence do
       end
     end
 
-    context 'with a complete set of non-identical values' do
+    context 'with a full set of non-identical, non-nil values' do
       let(:sequence) { described_class.new(['X', 'X', 'O']) }
 
       it 'should return false' do
@@ -32,7 +50,7 @@ describe TicTacToe::Sequence do
       end
     end
 
-    context 'with a incomplete set of values' do
+    context 'with nil values' do
       let(:sequence) { described_class.new(['X', 'X', nil]) }
 
       it 'should return false' do

@@ -7,10 +7,16 @@ module TicTacToe
       @size = values.size
     end
 
+    # Returns true if all values are non-nil (i.e. a marker in each space)
+    def full?
+      values == values.compact
+    end
+
     # Returns true if values are identical (non-nil) markers
     def complete?
-      values == values.compact && values.uniq.count == 1
+       full? && values.uniq.count == 1
     end
+
 
     def count(character)
       values.count(character)

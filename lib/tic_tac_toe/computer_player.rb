@@ -27,7 +27,7 @@ module TicTacToe
     end
 
     def random_move
-      row = random_row
+      row = random_available_row
       column_index = random_column_index(row)
       [row.index, column_index]
     end
@@ -36,8 +36,8 @@ module TicTacToe
       parser.sequences.find { |seq| seq.count(marker) == parser.board_size - 1 }
     end
 
-    def random_row
-      available_rows = parser.rows.reject { |r| r.complete? }
+    def random_available_row
+      available_rows = parser.rows.reject { |r| r.full? }
       available_rows.sample
     end
 
