@@ -98,17 +98,17 @@ describe TicTacToe::CLI do
     let(:player) { build(:player_one) }
 
     it 'should prompt the current player to enter their move' do
-      allow(cli).to receive(:process_input) { '3,2' }
+      allow(cli).to receive(:process_input) { '2,1' }
 
       cli.parse_move(player)
 
       expect(cli).to have_received(:process_input).with("#{player.formatted} - Enter coordinates")
     end
 
-    it 'should parse the user input into zero-indexed row & column indices' do
-      allow(cli).to receive(:process_input) { '3,2' }
+    it 'should parse the user input into row & column indices' do
+      allow(cli).to receive(:process_input) { '2,1' }
 
-      expect(cli.parse_move(player)).to eq([2, 1])
+      expect(cli.parse_move(player)).to eq([2,1])
     end
 
     context 'with invalid format' do

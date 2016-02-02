@@ -14,8 +14,7 @@ module TicTacToe
         raise InvalidMoveError, 'Invalid format (must match: X,Y)'
       end
 
-      # Return indices for a zero-indexed array
-      input.split(',').map{ |i| i.to_i - 1 }
+      input.split(',').map{ |i| i.to_i }
     end
 
     def puts(text)

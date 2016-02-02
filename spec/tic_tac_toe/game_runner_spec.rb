@@ -203,10 +203,10 @@ describe TicTacToe::GameRunner do
 
       context 'with a valid move' do
         before do
-          allow(runner.cli).to receive(:parse_move).and_return([0, 0])
+          allow(runner.cli).to receive(:parse_move).and_return([1, 1])
         end
 
-        it 'should place the player\'s marker on the designated spot' do
+        it 'should place the player\'s marker on the designated square (translated to zero-indexed array)' do
           expect {
             runner.next_move
           }.to change{ runner.board.spaces[0][0] }.from(nil).to(players[0].marker)

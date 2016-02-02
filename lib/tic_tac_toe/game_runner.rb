@@ -58,7 +58,7 @@ module TicTacToe
 
     def next_move
       begin
-        column, row = get_next_move
+        row, column = get_next_move
         board.place_marker(row, column, current_player.marker)
         toggle_current_player
       rescue InvalidMoveError => e
@@ -81,8 +81,12 @@ module TicTacToe
       if current_player.is_a?(ComputerPlayer)
         current_player.next_move(board.spaces)
       else
-        cli.parse_move(current_player)
+        translate_human_coordinates(cli.parse_move(current_player))
       end
+    end
+
+    def translate_human_coordinates(coordinates)
+      coordinates.reverse.map{ |c| c - 1 }
     end
 
     def toggle_current_player
