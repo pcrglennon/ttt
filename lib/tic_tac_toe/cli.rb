@@ -23,7 +23,7 @@ module TicTacToe
 
     def board_string(rows)
       [
-        " X  #{(1..rows.size).to_a.join('   ')}",
+        " X   #{(1..rows.size).to_a.join('   ')}",
         "Y",
         board_row_strings(rows)
       ].flatten.join("\n")
@@ -82,11 +82,12 @@ module TicTacToe
     end
 
     def board_row_string(row)
-      row.map { |marker| marker.nil? ? ' ' : marker }.join(' | ')
+      " #{row.map { |marker| marker.nil? ? ' ' : marker }.join(' | ')} "
     end
 
     def board_row_divider(length)
-      "\n    #{"---" * length}\n"
+      divider_string = ("----" * length)[0...-1]
+      "\n    #{divider_string}\n"
     end
 
     def move_coordinates_format
