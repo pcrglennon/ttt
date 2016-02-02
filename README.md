@@ -7,13 +7,14 @@ A barebones TicTacToe console application.
 To start the application:
 
 ```sh
+$ bundle install
 $ chmod u+x bin/run
 $ ./bin/run
 ```
 
 ## Testing
 
-To run the test suite, run `bundle install` to install `rspec` and `factory-girl`, and then run `rspec`.
+The test suite is built using `rspec` and `factory-girl`, which will be installed via the `bundle install` step above.
 
 ## Notes
 
