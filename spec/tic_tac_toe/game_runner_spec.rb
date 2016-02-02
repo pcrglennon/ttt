@@ -82,11 +82,16 @@ describe TicTacToe::GameRunner do
   describe '#play_game' do
     before do
       runner.board = build(:empty_board)
+      allow(runner).to receive(:new_game!)
       allow(runner).to receive(:game_over?).and_return(*([false] * 5), true)
       allow(runner.cli).to receive(:print_board)
       allow(runner).to receive(:next_move)
       allow(runner).to receive(:print_game_result)
       runner.play_game
+    end
+
+    it 'should reset the game' do
+      expect(runner).to have_received(:new_game!)
     end
 
     it 'should prompt for the next move until the game is over' do
@@ -179,61 +184,85 @@ describe TicTacToe::GameRunner do
   end
 
   describe '#next_move' do
-    let(:players) { [build(:player_one), build(:player_two)] }
+    let(:players) { [build(:player_one), build(:computer_player)] }
 
     before do
       runner.players = players
-      runner.current_player = players[0]
       runner.board = build(:empty_board)
     end
 
-    it 'should prompt the current player to make their move' do
-      allow(runner.cli).to receive(:parse_move).and_return([1, 1])
-      runner.next_move
+    context 'with a human Player' do
+      before { runner.current_player = players[0] }
 
-      expect(runner.cli).to have_received(:parse_move)
-    end
+      it 'should prompt the player to make their move' do
+        allow(runner.cli).to receive(:parse_move).and_return([1, 1])
+        runner.next_move
 
-    context 'with a valid move' do
-      before do
-        allow(runner.cli).to receive(:parse_move).and_return([0, 0])
+        expect(runner.cli).to have_received(:parse_move)
       end
 
-      it 'should place the current player\'s marker on the designated spot' do
+      context 'with a valid move' do
+        before do
+          allow(runner.cli).to receive(:parse_move).and_return([0, 0])
+        end
+
+        it 'should place the player\'s marker on the designated spot' do
+          expect {
+            runner.next_move
+          }.to change{ runner.board.spaces[0][0] }.from(nil).to(players[0].marker)
+        end
+
+        it 'should toggle the current player' do
+          expect {
+            runner.next_move
+          }.to change{ runner.current_player }.from(players[0]).to(players[1])
+        end
+      end
+
+      context 'with an invalid move' do
+        before do
+          allow(runner.cli).to receive(:puts)
+          allow(runner.cli).to receive(:parse_move).and_raise(TicTacToe::InvalidMoveError, 'Foobar')
+        end
+
+        it 'should place the player\'s marker' do
+          expect {
+            runner.next_move
+          }.to_not change{ runner.board.spaces }
+        end
+
+        it 'should should not toggle the current player' do
+          expect {
+            runner.next_move
+          }.to_not change{ runner.current_player }
+        end
+
+        it 'should log the error message' do
+          runner.next_move
+
+          expect(runner.cli).to have_received(:puts).with(/Foobar/)
+        end
+      end
+    end
+
+    context 'with a computer Player' do
+      before { runner.current_player = players[1] }
+
+      before do
+        allow(players[1]).to receive(:next_move)
+          .with(runner.board.spaces).and_return([0, 0])
+      end
+
+      it 'should place the player\'s marker on the designated spot' do
         expect {
           runner.next_move
-        }.to change{ runner.board.spaces[0][0] }.from(nil).to(players[0].marker)
+        }.to change{ runner.board.spaces[0][0] }.from(nil).to(players[1].marker)
       end
 
       it 'should toggle the current player' do
         expect {
           runner.next_move
-        }.to change{ runner.current_player }.from(players[0]).to(players[1])
-      end
-    end
-
-    context 'with an invalid move' do
-      before do
-        allow(runner.cli).to receive(:puts)
-        allow(runner.cli).to receive(:parse_move).and_raise(TicTacToe::InvalidMoveError, 'Foobar')
-      end
-
-      it 'should place the current player\'s marker' do
-        expect {
-          runner.next_move
-        }.to_not change{ runner.board.spaces }
-      end
-
-      it 'should should not toggle the current player' do
-        expect {
-          runner.next_move
-        }.to_not change{ runner.current_player }
-      end
-
-      it 'should log the error message' do
-        runner.next_move
-
-        expect(runner.cli).to have_received(:puts).with(/Foobar/)
+        }.to change{ runner.current_player }.from(players[1]).to(players[0])
       end
     end
   end
@@ -256,13 +285,30 @@ describe TicTacToe::GameRunner do
     end
   end
 
+  describe '#game_loop' do
+    before do
+      allow(runner).to receive(:play_game)
+      allow(runner).to receive(:play_again?).and_return(false)
+      runner.game_loop
+    end
+
+    it 'should start a new game' do
+      expect(runner).to have_received(:play_game)
+    end
+
+    context 'when another game is requested' do
+      before { allow(runner).to receive(:play_again?).and_return(true) }
+
+      it 'should start a new game' do
+        expect(runner).to have_received(:play_game)
+      end
+    end
+  end
+
   describe '#run' do
     before do
       allow(runner).to receive(:initialize_players)
-      allow(runner).to receive(:new_game!)
-      allow(runner).to receive(:play_game)
-      allow(runner).to receive(:play_again?).and_return(false)
-
+      allow(runner).to receive(:game_loop)
       allow(runner.cli).to receive(:puts)
       runner.run
     end
@@ -275,24 +321,12 @@ describe TicTacToe::GameRunner do
       expect(runner).to have_received(:initialize_players)
     end
 
-    it 'should start a new game' do
-      expect(runner).to have_received(:new_game!)
-      expect(runner).to have_received(:play_game)
+    it 'should start the game_loop' do
+      expect(runner).to have_received(:game_loop)
     end
 
-    context 'when another game is requested' do
-      before { allow(runner).to receive(:play_again?).and_return(true) }
-
-      it 'should start a new game' do
-        expect(runner).to have_received(:new_game!)
-        expect(runner).to have_received(:play_game)
-      end
-    end
-
-    context 'when another game is not requested' do
-      it 'should print a goodbye message' do
-        expect(runner.cli).to have_received(:puts).with(/Goodbye!/)
-      end
+    it 'should print a goodbye message' do
+      expect(runner.cli).to have_received(:puts).with(/Goodbye!/)
     end
   end
 end

@@ -10,13 +10,20 @@ module TicTacToe
 
     def run
       cli.puts(welcome_message)
-      initialize_players
+      begin
+        initialize_players
+        game_loop
+      rescue Interrupt
+      ensure
+        cli.puts(goodbye_message)
+      end
+    end
+
+    def game_loop
       loop do
-        new_game!
         play_game
         break unless play_again?
       end
-      cli.puts(goodbye_message)
     end
 
     def initialize_players
@@ -32,6 +39,7 @@ module TicTacToe
     end
 
     def play_game
+      new_game!
       until game_over?
         cli.print_board(board.spaces)
         next_move
@@ -50,7 +58,7 @@ module TicTacToe
 
     def next_move
       begin
-        column, row = cli.parse_move(current_player)
+        column, row = get_next_move
         board.place_marker(row, column, current_player.marker)
         toggle_current_player
       rescue InvalidMoveError => e
@@ -67,6 +75,14 @@ module TicTacToe
 
     def parser
       BoardParser.new(board.spaces)
+    end
+
+    def get_next_move
+      if current_player.is_a?(ComputerPlayer)
+        current_player.next_move(board.spaces)
+      else
+        cli.parse_move(current_player)
+      end
     end
 
     def toggle_current_player

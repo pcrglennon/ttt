@@ -42,7 +42,7 @@ module TicTacToe
     end
 
     def random_column_index(row)
-      available_indices = row.values.each_index.select { |i| row[i].nil? }
+      available_indices = row.values.each_index.select { |i| row.values[i].nil? }
       available_indices.sample
     end
   end
