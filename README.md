@@ -1,41 +1,59 @@
 # TicTacToe
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/tic_tac_toe`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'tic_tac_toe'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install tic_tac_toe
+A barebones TicTacToe console application.
 
 ## Usage
 
-TODO: Write usage instructions here
+To start the application:
 
-## Development
+```sh
+$ chmod u+x bin/run
+$ ./bin/run
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+## Testing
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To run the test suite, run `bundle install` to install `rspec` and `factory-girl`, and then run `rspec`.
 
-## Contributing
+## Notes
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/tic_tac_toe.
+You can play against another person, or against a semi-intelligent computer opponent.
 
+The size of the board is configurable between 3x3 and 9x9, and at the start of each game you will be prompted to set the size.
 
-## License
+The game loop itself is simple (psuedocode):
 
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+```
+until game_is_over?
+  make_next_move
+end
+output_game_result
+```
 
+The game is over when the board is full, or a winner is detected.  To check for the latter, the `BoardParser` class looks at each _n_-length sequence on the board.  That is, each row, each column, and the two _n_-length diagonals:
+
+```
+X | X | X    |   |      |   |    X |   |      | X |      |   | X  X |   |      |   | X
+---------  ---------  ---------  ---------  ---------  ---------  ---------  ---------
+  |   |    X | X | X    |   |    X |   |      | X |      |   | X    | X |      | X |
+---------  ---------  ---------  ---------  ---------  ---------  ---------  ---------
+  |   |      |   |    X | X | X  X |   |      | X |      |   | X    |   | X  X |   |
+
+```
+
+If any of them are completely filled by one marker, the owner of that marker is the winner.
+
+The computer opponent plays like so:
+
+* If there is an open square that would win the game, place marker there
+* Otherwise, if there is an open square that would block the opponent from winning, place marker there
+* Otherwise, place marker on a random open square
+
+To determine whether there is a winning/blocking move available, it utilizes the `BoardParser` class to look at all the _n_-length sequences, and check if any are one marker away from being a winning sequence.
+
+## Future Improvements
+
+* Randomize which player gets to make first move
+* Improve the computer opponent to be able to play perfectly, using the MiniMax algorithm.
+  * And allow ability to disable this, so that one can actually win a game!
+* Re-use logic in a visual application, and use clicks instead of entering coordinates
